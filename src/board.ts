@@ -13,33 +13,36 @@ export class Board {
 
   public Start() {
     console.log('Starting 2048');
-    this.board = [
-      { x: 1, y: 1, val: 2 },
-      { x: 2, y: 1, val: 4 },
-      { x: 3, y: 1, val: 8 },
-      { x: 4, y: 1, val: 16 },
-      { x: 1, y: 2, val: 32 },
-      { x: 2, y: 2, val: 64 },
-      { x: 4, y: 1, val: 64 },
-      { x: 3, y: 3, val: 64 },
-      { x: 4, y: 4, val: 2048 },
-
-    ]
+    this.board = [];
+    this.AddTile();
     this.AddTile();
     this.Draw();
   }
 
   public Move(direction: Direction) {
+
+    switch (direction) {
+      case Direction.Up:
+        for (let i=0;i<this.board.length-1;i++) {
+          const tile = this.board[i];
+          if (tile.y === 1) continue;
+          if (this.board.find(t => t.y === tile.y - 1)) continue;
+          console.log('moving up')
+          this.board[i].y--;
+        }
+    }
+
     this.AddTile();
     this.Draw();
   }
 
   private AddTile() {
     const empty: Tile[] = [];
+    const val = Math.random() * 5 < 1 ? 4 : 2;
 
     for (let x = 1; x <= 4; x++) {
       for (let y = 1; y <= 4; y++) {
-        if (!this.board.find(tile => tile.x === x && tile.y === y)) empty.push({ x, y, val: 2 });
+        if (!this.board.find(tile => tile.x === x && tile.y === y)) empty.push({ x, y, val });
       }
     }
     if (!empty.length) return this.Lose();
