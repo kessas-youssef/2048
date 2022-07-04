@@ -4,7 +4,6 @@ import './scss/style.scss'
 const game = new Board();
 game.Start();
 
-
 const onKeyPress = (evt: any) => {
   switch (evt.key) {
     case 'ArrowUp': game.Move(Direction.Up); break;

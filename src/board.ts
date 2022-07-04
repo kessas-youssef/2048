@@ -23,12 +23,24 @@ export class Board {
 
     switch (direction) {
       case Direction.Up:
-        for (let i=0;i<this.board.length-1;i++) {
-          const tile = this.board[i];
-          if (tile.y === 1) continue;
-          if (this.board.find(t => t.y === tile.y - 1)) continue;
-          console.log('moving up')
-          this.board[i].y--;
+        while (true) {
+          let dirty = false;
+          for (let i = 0; i < this.board.length; i++) {
+            const tile = this.board[i];
+            if (tile.y === 1) continue;
+            const existing = this.board.find(t => t.y === tile.y - 1 && t.x === tile.x);
+            if (existing) {
+              if (existing.val === tile.val) {
+                // Combine tiles
+                existing.val = existing.val + tile.val;
+                this.board = this.board.filter(t => !(t.x === tile.x && t.y === tile.y));
+              }
+              continue;
+            }
+            this.board[i].y--;
+            dirty = true;
+          }
+          if (!dirty) break;
         }
     }
 
@@ -45,7 +57,7 @@ export class Board {
         if (!this.board.find(tile => tile.x === x && tile.y === y)) empty.push({ x, y, val });
       }
     }
-    if (!empty.length) return this.Lose();
+    if (empty.length === 0) return this.Lose();
     const index = Math.floor(Math.random() * empty.length);
     this.board.push(empty[index])
   }
@@ -55,8 +67,14 @@ export class Board {
   }
 
   public Draw() {
+    const tiles = document.querySelectorAll('.tile') as any;
+
+    tiles?.forEach((t: any) => {
+      t.className = 'tile';
+      t.innerHTML = '';
+    })
+
     for (const tile of this.board) {
-      const tiles = document.querySelectorAll('.tile') as any;
       tiles?.forEach((t: any) => {
         if (t.dataset.col === String(tile.x) && t.dataset.row === String(tile.y)) {
           t.classList.add('active', `val_${tile.val}`);
